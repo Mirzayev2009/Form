@@ -1,11 +1,9 @@
-"use client"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -14,50 +12,54 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { useState } from "react"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
 
 // Define the validation schema using Zod
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  Name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
   }),
   email: z.string().email({
     message: "Please enter a valid email address.",
   }),
-  password: z.string().min(6, {
-    message: "Password must be at least 6 characters.",
+  address: z.string().min(6, {
+    message: "Address must be at least 6 characters.",
   }),
-})
+});
 
-export function ProfileForm() {
-  // Initialize the form with react-hook-form and Zod schema validation
+export function ProfileForm({ setDetails }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
-  })
+  });
 
-  const [info, setInfo] = useState([])
+  const [info, setInfo] = useState([]);
 
-  // Define the onSubmit handler
+  // Log the state whenever `info` changes
+  useEffect(() => {
+    if (info.length > 0) {
+      window.console.log(info); // Use window.console.log instead of console.log
+      setDetails(info); // Update the details in the parent component
+    }
+  }, [info, setDetails]); // Runs when `info` changes
+
   const onSubmit = (data) => {
-    console.log(data) // Replace this with your submit logic
+    window.console.log(data); // Log the form data using window.console.log
     
     // Use functional form of setInfo to get the latest state value
-    setInfo(prevInfo => [...prevInfo, data])
-    
-    console.log(info); // You'll see the updated state value after the re-render
+    setInfo((prevInfo) => [...prevInfo, data]); // Add new data to the state
 
-    form.reset() // Reset the form
-  }
+    form.reset(); // Reset the form
+  };
 
   return (
     <div className="min-h-screen bg-black flex justify-center items-center">
       {/* Card with black inside and reasonable size */}
       <Card className="space-y-6 p-8 border border-white text-white max-w-3xl w-full bg-black">
         <CardHeader>
-          <CardTitle className="text-2xl">Profile Settings</CardTitle>
-          <CardDescription className="text-lg">Update your information</CardDescription>
+          <CardTitle className="text-2xl">Boss Settings</CardTitle>
+          <CardDescription className="text-lg">Update information of your employers </CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -66,27 +68,27 @@ export function ProfileForm() {
               {/* Username Field */}
               <FormField
                 control={form.control}
-                name="username"
+                name="Name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl">Username</FormLabel>
+                    <FormLabel className="text-xl">Name</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="enter your username"
+                        placeholder="enter employer's name"
                         {...field}
                         className="bg-black text-white border-white focus:ring-white text-lg p-3"
                       />
                     </FormControl>
                     <FormDescription className="text-md">
-                      This is your public display name.
+                      This is employer's name.
                     </FormDescription>
                     <FormMessage className="text-red-500">
-                      {form.formState.errors.username?.message}
+                      {form.formState.errors.Name?.message}
                     </FormMessage>
                   </FormItem>
                 )}
               />
-              
+
               {/* Email Field */}
               <FormField
                 control={form.control}
@@ -96,13 +98,13 @@ export function ProfileForm() {
                     <FormLabel className="text-xl">Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="youremail@example.com"
+                        placeholder="employeremail@example.com"
                         {...field}
                         className="bg-black text-white border-white focus:ring-white text-lg p-3"
                       />
                     </FormControl>
                     <FormDescription className="text-md">
-                      This is your email address.
+                      This is employer's email address.
                     </FormDescription>
                     <FormMessage className="text-red-500">
                       {form.formState.errors.email?.message}
@@ -110,32 +112,32 @@ export function ProfileForm() {
                   </FormItem>
                 )}
               />
-              
-              {/* Password Field */}
+
+              {/* Address Field */}
               <FormField
                 control={form.control}
-                name="password"
+                name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xl">Password</FormLabel>
+                    <FormLabel className="text-xl">Address</FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
-                        placeholder="••••••"
+                        type="text"
+                        placeholder="address"
                         {...field}
                         className="bg-black text-white border-white focus:ring-white text-lg p-3"
                       />
                     </FormControl>
                     <FormDescription className="text-md">
-                      This is your secure password.
+                      This is employer's address.
                     </FormDescription>
                     <FormMessage className="text-red-500">
-                      {form.formState.errors.password?.message}
+                      {form.formState.errors.address?.message}
                     </FormMessage>
                   </FormItem>
                 )}
               />
-              
+
               <Button type="submit" className="bg-white text-black hover:bg-gray-200 text-lg py-3 px-6">
                 Submit
               </Button>
@@ -148,7 +150,8 @@ export function ProfileForm() {
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
+
 
 
